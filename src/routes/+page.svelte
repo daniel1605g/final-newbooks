@@ -38,6 +38,20 @@
       return 'Other';
     }
   }
+
+  let totalRevenue = $derived(
+    transactions
+      .filter((t) => classify(t) === 'Revenue')
+      .reduce((sum, t) => sum + t.amount, 0)
+  );
+
+  let totalExpenses = $derived(
+    transactions
+      .filter((t) => classify(t) === 'Expense')
+      .reduce((sum, t) => sum + t.amount, 0)
+  );
+
+  let netIncome = $derived(totalRevenue - totalExpenses);
 </script>
 
 <div class="max-w-5xl mx-auto p-6 space-y-8">
@@ -113,15 +127,19 @@
     <div class="space-y-2">
       <div class="flex justify-between text-emerald-700 font-medium">
         <span>Total Revenue</span>
-        <span>$0.00</span>
+        <span>${totalRevenue.toFixed(2)}</span>
       </div>
+
       <div class="flex justify-between text-rose-700 font-medium">
         <span>Total Expenses</span>
-        <span>$0.00</span>
+        <span>${totalExpenses.toFixed(2)}</span>
       </div>
+
       <div class="flex justify-between border-t border-slate-300 pt-2 text-lg font-bold">
         <span>Net Income</span>
-        <span>$0.00</span>
+        <span class={netIncome >= 0 ? 'text-emerald-700' : 'text-rose-700'}>
+          ${netIncome.toFixed(2)}
+        </span>
       </div>
     </div>
   </section>
@@ -142,6 +160,7 @@
             <th class="text-left px-3 py-2">Type</th>
           </tr>
         </thead>
+
         <tbody>
           {#each transactions as t (t.id)}
             <tr class="border-t border-slate-200 hover:bg-slate-50">
